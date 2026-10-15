@@ -1,0 +1,15 @@
+{
+  "ModName": "QuickSalvage",
+  "PackageName": "QuickSalvage",
+  "Version": "__VERSION__",
+  "Author": "Chris Moates",
+  "Description": "Skip the flotsam salvage gauge on open-water salvage spots (FinishSalvageGame on success path only).",
+  "Dependencies": ["UE4SSExperimentalPW"],
+  "Tags": ["UE4SS", "Gameplay"],
+  "InstallRule": [
+    {
+      "Type": "Lua",
+      "Targets": ["./Scripts"]
+    }
+  ]
+}

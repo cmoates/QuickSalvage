@@ -1,0 +1,82 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version string (e.g. 1.0.0)
+        required: true
+      upload_nexus:
+        description: Upload to Nexus Mods (requires secrets/vars)
+        type: boolean
+        default: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve version
+        id: version
+        run: |
+          if [ -n "${{ github.event.release.tag_name }}" ]; then
+            VERSION="${{ github.event.release.tag_name }}"
+            VERSION="${VERSION#v}"
+          else
+            VERSION="${{ github.event.inputs.version }}"
+          fi
+          echo "value=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Version: $VERSION"
+
+      - name: Build Vortex package
+        run: bash tools/package-vortex.sh
+        env:
+          VERSION: ${{ steps.version.outputs.value }}
+
+      - name: Attach to GitHub Release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.zip
+
+      - name: Generate changelog snippet
+        if: vars.NEXUSMODS_UPLOAD_ENABLED == 'true' && (github.event_name == 'release' || inputs.upload_nexus)
+        id: changelog
+        run: |
+          {
+            echo "changelog<<EOF"
+            if [ -n "${{ github.event.release.body }}" ]; then
+              echo "${{ github.event.release.body }}"
+            else
+              echo "Released on $(date -u +'%Y-%m-%d')"
+              echo ""
+              git log -n 15 --no-merges --pretty=format:'- %s' || true
+            fi
+            echo ""
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Upload to Nexus Mods
+        if: vars.NEXUSMODS_UPLOAD_ENABLED == 'true' && (github.event_name == 'release' || inputs.upload_nexus)
+        uses: Nexus-Mods/upload-action@v1.0.0-beta.10
+        with:
+          api_key: ${{ secrets.NEXUSMODS_API_KEY }}
+          file_id: ${{ vars.NEXUSMODS_FILE_ID }}
+          mod_id: ${{ vars.NEXUSMODS_MOD_ID }}
+          filename: dist/QuickSalvage-${{ steps.version.outputs.value }}.zip
+          display_name: "QuickSalvage"
+          version: ${{ steps.version.outputs.value }}
+          category: main
+          allow_mod_manager_download: true
+          primary_mod_manager_download: true
+          archive_existing_version: true
+          update_mod_version: true
+          changelog: ${{ steps.changelog.outputs.changelog }}

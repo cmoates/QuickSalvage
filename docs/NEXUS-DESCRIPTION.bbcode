@@ -1,0 +1,64 @@
+[size=5][b]QuickSalvage[/b][/size]
+
+Small UE4SS Lua mod for [url=https://store.steampowered.com/app/1623730/Palworld/]Palworld[/url] that skips the [b]flotsam salvage[/b] gauge minigame (open-water salvage spots while on a water mount with a fishing rod).
+
+Pure Lua hooks — no LogicMod [i].pak[/i] required. Same success loot as hitting the green zone; drop tables are not modified.
+
+[b]Current release: 0.1.1[/b]
+
+[hr]
+
+[size=4][b]Features[/b][/size]
+[list]
+[*] Auto-completes the circular gauge via [code]FinishSalvageGame()[/code]
+[*] Toggle on/off in-game with [b]Alt+F9[/b] ([b]Alt+F12[/b] is QuickCatch)
+[*] Small codebase — good reference for learning UE4SS hook mods
+[*] Hook cleanup on Lua reload (Ctrl+R)
+[/list]
+
+[size=4][b]Requirements[/b][/size]
+[list]
+[*] [url=https://github.com/UE4SS-RE/RE-UE4SS]UE4SS[/url] (Palworld experimental build)
+[*] Palworld with UE4SS Lua mods enabled
+[/list]
+
+[size=4][b]Install (Vortex — recommended)[/b][/size]
+[list]
+[*] Install [url=https://www.nexusmods.com/about/vortex/]Vortex[/url] and the [url=https://www.nexusmods.com/site/mods/770]Palworld extension[/url].
+[*] Install [b]UE4SS[/b] for Palworld when Vortex prompts.
+[*] Install [b]QuickSalvage[/b] from this page and deploy with Vortex.
+[/list]
+
+[size=4][b]Install (manual)[/b][/size]
+[list]
+[*] Extract to:
+[code]Palworld/Pal/Binaries/Win64/ue4ss/Mods/QuickSalvage/[/code]
+[*] The zip includes [code]enabled.txt[/code] for automatic load, or add [code]QuickSalvage : 1[/code] to [code]mods.txt[/code] (use one method, not both).
+[*] Launch the game or reload Lua with [b]Ctrl+R[/b] after joining a world.
+[/list]
+
+[size=4][b]Usage[/b][/size]
+[list]
+[*] Start flotsam salvage as usual (water mount + rod).
+[*] The gauge should resolve immediately as a success.
+[*] Press [b]Alt+F9[/b] to toggle the mod.
+[/list]
+
+Confirm load in [code]UE4SS.log[/code]:
+[code][QuickSalvage] v0.1.1 loaded; ON (Alt+F9 toggle)[/code]
+
+[size=4][b]Configuration[/b][/size]
+Edit [code]Scripts/config.lua[/code] after install.
+
+[table]
+[tr][td][b]Option[/b][/td][td][b]Default[/b][/td][td][b]Description[/b][/td][/tr]
+[tr][td][code]enabled[/code][/td][td][code]true[/code][/td][td]Master switch at load. Alt+F9 toggles at runtime.[/td][/tr]
+[tr][td][code]delay_ms[/code][/td][td][code]200[/code][/td][td]Delay before [code]FinishSalvageGame[/code] on [code]OnBeginAction[/code].[/td][/tr]
+[tr][td][code]retry_delay_ms[/code][/td][td][code]120[/code][/td][td]Backup delay on [code]SetupAnim[/code].[/td][/tr]
+[tr][td][code]debug[/code][/td][td][code]false[/code][/td][td]Extra logging in [code]UE4SS.log[/code].[/td][/tr]
+[/table]
+
+[size=4][b]Source & issues[/b][/size]
+[url=https://github.com/cmoates/QuickSalvage]GitHub — cmoates/QuickSalvage[/url]
+
+MIT License.

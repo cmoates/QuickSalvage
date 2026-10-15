@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build Vortex package
+        run: bash tools/package-vortex.sh
+        env:
+          VERSION: ci
+
+      - name: Upload package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vortex-package
+          path: dist/*.zip
